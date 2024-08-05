@@ -38,9 +38,11 @@ class HtmlToPdfConverter {
     }
 
     fun createPdfFromWebView(webView: WebView, applicationContext: Context, callback: Callback) {
+    // Handler para garantir execução no Looper principal
+    val handler = Handler(Looper.getMainLooper())
+    
     Timer().schedule(object : TimerTask() {
         override fun run() {
-            val handler = Handler(Looper.getMainLooper())
             handler.post {
                 val path = applicationContext.filesDir
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -53,6 +55,7 @@ class HtmlToPdfConverter {
                     val printer = PdfPrinter(attributes)
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        // Assegurando que o WebView esteja na thread principal
                         val adapter = webView.createPrintDocumentAdapter("temporaryDocumentName")
 
                         printer.print(adapter, path, "temporaryFileName", object : PdfPrinter.Callback {
@@ -70,6 +73,7 @@ class HtmlToPdfConverter {
         }
     }, 10000)
 }
+
 
     companion object {
         const val temporaryDocumentName = "TemporaryDocumentName"
