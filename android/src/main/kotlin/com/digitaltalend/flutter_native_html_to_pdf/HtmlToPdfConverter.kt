@@ -9,9 +9,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 
 import java.io.File
-import java.sql.Time
-import java.util.Timer
-import kotlin.concurrent.timerTask
 
 class HtmlToPdfConverter {
 
@@ -37,7 +34,6 @@ class HtmlToPdfConverter {
     }
 
     fun createPdfFromWebView(webView: WebView, applicationContext: Context, callback: Callback) {
-        Timer().schedule(timerTask {
             val path = applicationContext.filesDir
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
@@ -62,7 +58,6 @@ class HtmlToPdfConverter {
                     })
                 }
             }
-        }, 10000)
     }
 
     companion object {
