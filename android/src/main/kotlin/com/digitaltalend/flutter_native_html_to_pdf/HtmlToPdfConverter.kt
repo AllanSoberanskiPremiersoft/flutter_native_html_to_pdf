@@ -11,7 +11,6 @@ import android.webkit.WebViewClient
 import java.io.File
 import java.sql.Time
 import java.util.Timer
-import kotlin.concurrent.timerTask
 
 
 class HtmlToPdfConverter {
