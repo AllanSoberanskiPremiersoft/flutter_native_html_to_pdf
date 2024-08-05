@@ -3,6 +3,8 @@ package com.digitaltalend.flutter_native_html_to_pdf
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.print.PdfPrinter
 import android.print.PrintAttributes
 import android.webkit.WebView
@@ -37,33 +39,35 @@ class HtmlToPdfConverter {
 
     fun createPdfFromWebView(webView: WebView, applicationContext: Context, callback: Callback) {
         Timer().schedule(timerTask {
-            val path = applicationContext.filesDir
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            val handler = Handler(Looper.getMainLooper())
+            handler.post {
+                val path = applicationContext.filesDir
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
-                val attributes = PrintAttributes.Builder()
-                    .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
-                    .setResolution(PrintAttributes.Resolution("pdf", "pdf", 600, 600))
-                    .setMinMargins(PrintAttributes.Margins.NO_MARGINS).build()
+                    val attributes = PrintAttributes.Builder()
+                        .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                        .setResolution(PrintAttributes.Resolution("pdf", "pdf", 600, 600))
+                        .setMinMargins(PrintAttributes.Margins.NO_MARGINS).build()
 
-                val printer = PdfPrinter(attributes)
+                    val printer = PdfPrinter(attributes)
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    val adapter = webView.createPrintDocumentAdapter(temporaryDocumentName)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        val adapter = webView.createPrintDocumentAdapter(temporaryDocumentName)
 
-                    printer.print(adapter, path, temporaryFileName, object : PdfPrinter.Callback {
-                        override fun onSuccess(filePath: String) {
-                            callback.onSuccess(filePath)
-                        }
+                        printer.print(adapter, path, temporaryFileName, object : PdfPrinter.Callback {
+                            override fun onSuccess(filePath: String) {
+                                callback.onSuccess(filePath)
+                            }
 
-                        override fun onFailure() {
-                            callback.onFailure()
-                        }
-                    })
+                            override fun onFailure() {
+                                callback.onFailure()
+                            }
+                        })
+                    }
                 }
             }
         }, 10000)
     }
-
     companion object {
         const val temporaryDocumentName = "TemporaryDocumentName"
         const val temporaryFileName = "TemporaryDocumentFile.pdf"
