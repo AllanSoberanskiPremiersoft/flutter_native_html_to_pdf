@@ -38,7 +38,8 @@ class HtmlToPdfConverter {
     }
 
     fun createPdfFromWebView(webView: WebView, applicationContext: Context, callback: Callback) {
-        Timer().schedule(timerTask {
+    Timer().schedule(object : TimerTask() {
+        override fun run() {
             val handler = Handler(Looper.getMainLooper())
             handler.post {
                 val path = applicationContext.filesDir
@@ -52,9 +53,9 @@ class HtmlToPdfConverter {
                     val printer = PdfPrinter(attributes)
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        val adapter = webView.createPrintDocumentAdapter(temporaryDocumentName)
+                        val adapter = webView.createPrintDocumentAdapter("temporaryDocumentName")
 
-                        printer.print(adapter, path, temporaryFileName, object : PdfPrinter.Callback {
+                        printer.print(adapter, path, "temporaryFileName", object : PdfPrinter.Callback {
                             override fun onSuccess(filePath: String) {
                                 callback.onSuccess(filePath)
                             }
@@ -66,8 +67,10 @@ class HtmlToPdfConverter {
                     }
                 }
             }
-        }, 10000)
-    }
+        }
+    }, 10000)
+}
+
     companion object {
         const val temporaryDocumentName = "TemporaryDocumentName"
         const val temporaryFileName = "TemporaryDocumentFile.pdf"
